@@ -16,16 +16,16 @@ OmiGuard is an AI-powered environmental monitoring system for harmful gas and ai
 
 ```text
 .
-├── gas_ai_system/
-│   ├── dashboard/              # Static OmiGuard dashboard
-│   ├── data/                   # Sample and model-ready datasets
-│   ├── models/                 # Trained model artifacts
-│   ├── prediction_service/     # Docker service files
-│   └── src/                    # API, training, Firebase, and pipeline code
-├── llm/                        # Optional standalone chatbot service
-├── .env.example                # Environment variable template
-├── .gitignore
-└── README.md
+|-- gas_ai_system/
+|   |-- dashboard/              # Static OmiGuard dashboard
+|   |-- data/                   # Sample and model-ready datasets
+|   |-- models/                 # Trained model artifacts
+|   |-- prediction_service/     # Docker service files
+|   `-- src/                    # API, training, Firebase, and pipeline code
+|-- llm/                        # Optional standalone chatbot service
+|-- .env.example                # Environment variable template
+|-- .gitignore
+`-- README.md
 ```
 
 ## System Requirements
