@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: prediction_service/Dockerfile
+    command: uvicorn src.api:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../data:/app/data
+      - ../models:/app/models
+      - ../firebase_key.json:/app/firebase_key.json:ro
+    restart: unless-stopped
+
+  predictor:
+    build:
+      context: ..
+      dockerfile: prediction_service/Dockerfile
+    command: python prediction_service/auto_predict_latest.py
+    depends_on:
+      - api
+    environment:
+      PREDICT_API_URL: http://api:8000/predict
+      PREDICT_INTERVAL_SECONDS: "90"
+      PREDICT_TIMEOUT_SECONDS: "20"
+      PREDICT_OUTPUT_DIR: /app/data/predictions
+      SAVE_PREDICTIONS_TO_FIREBASE: "false"
+    volumes:
+      - ../data:/app/data
+      - ../firebase_key.json:/app/firebase_key.json:ro
+    restart: unless-stopped

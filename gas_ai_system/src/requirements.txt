@@ -1,0 +1,14 @@
+pandas
+numpy
+scikit-learn
+fastapi
+uvicorn
+joblib
+firebase-admin
+requests
+pydantic
+flask
+flask-cors
+huggingface_hub
+python-dotenv
+tqdm

@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OmiGuard Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside id="sidebar" class="sidebar">
+        <a class="brand" href="#" aria-label="OmiGuard dashboard">
+          <span class="brand-mark"><img src="assets/omeife-logo.png" alt="" aria-hidden="true"></span>
+          <span>OmiGuard</span>
+        </a>
+
+        <button id="mobileMenuToggle" class="mobile-menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="dashboardNav" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+
+        <nav id="dashboardNav" class="nav-menu" aria-label="Dashboard navigation">
+          <p class="nav-section">Monitoring</p>
+          <a class="nav-link active" href="#" aria-current="page"><i data-lucide="layout-dashboard"></i><span>Dashboard</span><strong id="navRiskCount">0</strong></a>
+          <a class="nav-link" href="#"><i data-lucide="activity"></i><span>Live Readings</span></a>
+          <a class="nav-link" href="#"><i data-lucide="bell-ring"></i><span>Alerts</span></a>
+
+          <p class="nav-section">Model</p>
+          <a class="nav-link" href="#"><i data-lucide="history"></i><span>History</span></a>
+
+          <p class="nav-section">Device</p>
+          <a id="deviceNavLink" class="nav-link" href="#" data-panel="devices"><i data-lucide="router"></i><span id="deviceNavLabel">node_01</span></a>
+          <a class="nav-link" href="#"><i data-lucide="settings"></i><span>Settings</span></a>
+        </nav>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar">
+          <label class="search-box" aria-label="Search">
+            <i data-lucide="search"></i>
+            <input type="search" placeholder="Search">
+            <kbd>Enter</kbd>
+          </label>
+
+          <div class="topbar-actions">
+            <button class="icon-button" type="button" aria-label="Source"><i data-lucide="database"></i></button>
+            <button class="icon-button" type="button" aria-label="Notifications"><i data-lucide="bell"></i></button>
+            <span id="lastUpdated" class="last-updated">--</span>
+            <span id="connectionState" class="status-pill neutral">Connecting</span>
+            <div class="avatar" aria-label="Dashboard profile">
+              <i data-lucide="user-round"></i>
+              <span></span>
+            </div>
+          </div>
+        </header>
+
+        <main class="dashboard-content">
+          <section class="hero-row">
+            <article id="riskCard" class="card hero-card">
+              <div class="hero-copy">
+                <span class="eyebrow">Live prediction</span>
+                <div class="risk-title-row">
+                  <h1 id="riskClass">Waiting</h1>
+                  <span id="riskBadge" class="status-pill neutral">--</span>
+                </div>
+                <p id="riskAction" class="hero-message">Waiting for the first prediction result.</p>
+                <div class="hero-meta">
+                  <span><i data-lucide="clock-3"></i><small>Prediction</small><strong id="predictionTime">--</strong></span>
+                  <span><i data-lucide="radio-tower"></i><small>Sensor</small><strong id="sensorTime">--</strong></span>
+                  <span><i data-lucide="scan-search"></i><small>Anomaly</small><strong id="anomalyFlag">--</strong></span>
+                </div>
+              </div>
+              <div id="riskVisual" class="hero-visual neutral" aria-hidden="true">
+                <div class="shield-orbit">
+                  <i id="riskVisualIcon" data-lucide="shield-alert"></i>
+                </div>
+                <div class="mini-sensor one"></div>
+                <div class="mini-sensor two"></div>
+                <div class="mini-sensor three"></div>
+              </div>
+            </article>
+
+            <article class="card score-card">
+              <div class="card-head">
+                <span class="tile-icon violet"><i data-lucide="gauge"></i></span>
+                <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
+              </div>
+              <p class="tile-label">Risk Score</p>
+              <strong id="riskScore">--</strong>
+              <span id="riskScoreDelta" class="delta neutral">--</span>
+            </article>
+
+            <article class="card score-card">
+              <div class="card-head">
+                <span class="tile-icon green"><i data-lucide="cloud"></i></span>
+                <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
+              </div>
+              <p class="tile-label">CO</p>
+              <strong id="coValue">--</strong>
+              <span id="coLevel" class="delta neutral">ppm</span>
+            </article>
+
+            <article class="card score-card">
+              <div class="card-head">
+                <span class="tile-icon red"><i data-lucide="factory"></i></span>
+                <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
+              </div>
+              <p class="tile-label">SO2</p>
+              <strong id="so2Value">--</strong>
+              <span id="so2Level" class="delta neutral">ppm</span>
+            </article>
+          </section>
+
+          <section class="aqi-row">
+            <article class="card chart-card wide">
+              <div class="card-title">
+                <div>
+                  <span class="eyebrow">30-day air quality</span>
+                  <h2>AQI Trend</h2>
+                </div>
+                <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
+              </div>
+              <canvas id="aqiTrendChart" width="760" height="300"></canvas>
+            </article>
+
+            <div class="side-metrics-grid">
+              <article class="card metric-tile">
+                <span class="tile-icon purple"><i data-lucide="wind"></i></span>
+                <p>NO2</p>
+                <strong id="no2Value">--</strong>
+                <span id="no2Level" class="delta neutral">ppm</span>
+              </article>
+
+              <article class="card metric-tile">
+                <span class="tile-icon cyan"><i data-lucide="scan-line"></i></span>
+                <p>PM1.0</p>
+                <strong id="pm1Value">--</strong>
+                <span id="pm1Level" class="delta neutral">ug/m3</span>
+              </article>
+
+              <article class="card metric-tile combo-tile">
+                <span class="tile-icon amber"><i data-lucide="sparkles"></i></span>
+                <div class="combo-values">
+                  <div>
+                    <p>PM2.5</p>
+                    <strong id="pm25Value">--</strong>
+                    <span id="pm25Level" class="delta neutral">ug/m3</span>
+                  </div>
+                  <div>
+                    <p>PM10</p>
+                    <strong id="pm10Value">--</strong>
+                    <span id="pm10Level" class="delta neutral">ug/m3</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="card metric-tile combo-tile">
+                <span class="tile-icon orange"><i data-lucide="thermometer"></i></span>
+                <div class="combo-values">
+                  <div>
+                    <p>Temp</p>
+                    <strong id="temperatureValue">--</strong>
+                    <span id="temperatureLevel" class="delta neutral">°C</span>
+                  </div>
+                  <div>
+                    <p>Humidity</p>
+                    <strong id="humidityValue">--</strong>
+                    <span id="humidityLevel" class="delta neutral">%</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="analytics-grid">
+            <article class="card ring-card">
+              <div class="year-select">Live</div>
+              <div id="riskScoreRing" class="score-ring">
+                <span id="ringScore">--</span>
+                <small>confidence</small>
+              </div>
+              <p class="ring-caption"><strong id="deviceId">node_01</strong></p>
+            </article>
+
+            <article class="card quick-list">
+              <div class="card-title">
+                <div>
+                  <span class="eyebrow">Exposure</span>
+                  <h2>Summary</h2>
+                </div>
+                <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
+              </div>
+              <dl class="summary-list">
+                <div><dt>Rule Risk</dt><dd id="ruleRiskValue">--</dd></div>
+                <div><dt>Dominant</dt><dd id="dominantPollutant">--</dd></div>
+                <div><dt>Child Score</dt><dd id="childExposureScore">--</dd></div>
+                <div><dt>Total Gas Load</dt><dd id="gasLoad">--</dd></div>
+                <div><dt>Total PM Load</dt><dd id="pmLoad">--</dd></div>
+                <div><dt>Humidity Flag</dt><dd id="humidityFlag">--</dd></div>
+              </dl>
+            </article>
+
+            <article class="card trend-card">
+              <div class="card-title">
+                <div>
+                  <span class="eyebrow">Prediction history</span>
+                  <h2>Risk History Timeline</h2>
+                </div>
+                <span id="historyCount" class="status-pill neutral">0 records</span>
+              </div>
+              <canvas id="riskTrendChart" width="760" height="260"></canvas>
+            </article>
+
+            <article class="card history-card">
+              <div class="card-title">
+                <div>
+                  <span class="eyebrow">Recent</span>
+                  <h2>Predictions</h2>
+                </div>
+                <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Risk</th>
+                      <th>Score</th>
+                      <th>Anomaly</th>
+                      <th>Dominant</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyBody">
+                    <tr>
+                      <td colspan="5" class="empty-cell">Waiting for prediction history...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="deviceModal" class="modal-backdrop" hidden>
+      <section class="device-modal" role="dialog" aria-modal="true" aria-labelledby="deviceModalTitle">
+        <div class="modal-head">
+          <div>
+            <span class="eyebrow">Device</span>
+            <h2 id="deviceModalTitle">Select Device</h2>
+          </div>
+          <button id="deviceModalClose" class="icon-button" type="button" aria-label="Close device selector">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div id="deviceList" class="device-list" aria-label="Available devices"></div>
+
+        <form id="deviceForm" class="device-form">
+          <label for="deviceInput">Add device</label>
+          <div>
+            <input id="deviceInput" type="text" placeholder="node_02" autocomplete="off">
+            <button type="submit">Add</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <button id="chatToggle" class="chat-toggle" type="button" aria-label="Open OmiGuard assistant" aria-expanded="false">
+      <i data-lucide="message-circle"></i>
+    </button>
+
+    <section id="chatPanel" class="chat-panel" aria-label="OmiGuard assistant" hidden>
+      <div class="chat-panel-head">
+        <div>
+          <span class="eyebrow">Assistant</span>
+          <h2>OmiGuard Chat</h2>
+        </div>
+        <button id="chatClose" class="icon-button" type="button" aria-label="Close OmiGuard assistant">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div id="chatMessages" class="chat-messages" aria-live="polite">
+        <div class="chat-message assistant">
+          Ask about the current prediction, sensor readings, or safety actions.
+        </div>
+      </div>
+
+      <form id="chatForm" class="chat-form">
+        <input id="chatInput" type="text" placeholder="Ask about the live reading..." autocomplete="off">
+        <button type="submit" aria-label="Send message">
+          <i data-lucide="send"></i>
+        </button>
+      </form>
+    </section>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

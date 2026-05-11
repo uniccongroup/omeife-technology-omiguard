@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+emitrack/
+
+# Secrets and local config
+.env
+*.env
+!*.env.example
+firebase_key.json
+serviceAccountKey.json
+*.pem
+*.key
+
+# Generated runtime data
+gas_ai_system/data/processed_json/
+gas_ai_system/data/processed_json_no_aqi/
+gas_ai_system/data/processed_ids.txt
+logs/
+*.log
+
+# Local packaging/backups
+backups/
+*.zip
+*.tar
+*.tar.gz
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Notebooks
+.ipynb_checkpoints/
