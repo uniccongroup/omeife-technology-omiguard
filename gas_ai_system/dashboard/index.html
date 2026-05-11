@@ -35,9 +35,9 @@
 
       <div class="main-area">
         <header class="topbar">
-          <label class="search-box" aria-label="Search">
+          <label class="search-box" aria-label="Search dashboard">
             <i data-lucide="search"></i>
-            <input type="search" placeholder="Search">
+            <input id="dashboardSearch" type="search" placeholder="Search">
             <kbd>Enter</kbd>
           </label>
 
@@ -54,8 +54,8 @@
         </header>
 
         <main class="dashboard-content">
-          <section class="hero-row">
-            <article id="riskCard" class="card hero-card">
+          <section id="overviewSection" class="hero-row" data-search-label="dashboard overview risk prediction live readings alerts">
+            <article id="riskCard" class="card hero-card" data-search-label="risk prediction safe caution dangerous anomaly alert live prediction">
               <div class="hero-copy">
                 <span class="eyebrow">Live prediction</span>
                 <div class="risk-title-row">
@@ -79,7 +79,7 @@
               </div>
             </article>
 
-            <article class="card score-card">
+            <article id="riskScoreCard" class="card score-card" data-search-label="risk score confidence model">
               <div class="card-head">
                 <span class="tile-icon violet"><i data-lucide="gauge"></i></span>
                 <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
@@ -89,7 +89,7 @@
               <span id="riskScoreDelta" class="delta neutral">--</span>
             </article>
 
-            <article class="card score-card">
+            <article id="coCard" class="card score-card" data-search-label="co carbon monoxide gas ppm live readings">
               <div class="card-head">
                 <span class="tile-icon green"><i data-lucide="cloud"></i></span>
                 <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
@@ -99,7 +99,7 @@
               <span id="coLevel" class="delta neutral">ppm</span>
             </article>
 
-            <article class="card score-card">
+            <article id="so2Card" class="card score-card" data-search-label="so2 sulphur sulfur dioxide gas ppm live readings">
               <div class="card-head">
                 <span class="tile-icon red"><i data-lucide="factory"></i></span>
                 <button class="more-button" type="button" aria-label="More"><i data-lucide="ellipsis-vertical"></i></button>
@@ -110,8 +110,8 @@
             </article>
           </section>
 
-          <section class="aqi-row">
-            <article class="card chart-card wide">
+          <section id="airQualitySection" class="aqi-row" data-search-label="air quality aqi trend gas pollutants readings">
+            <article id="aqiCard" class="card chart-card wide" data-search-label="aqi trend air quality chart graph 30 day">
               <div class="card-title">
                 <div>
                   <span class="eyebrow">30-day air quality</span>
@@ -123,21 +123,21 @@
             </article>
 
             <div class="side-metrics-grid">
-              <article class="card metric-tile">
+              <article id="no2Card" class="card metric-tile" data-search-label="no2 nitrogen dioxide gas ppm live readings">
                 <span class="tile-icon purple"><i data-lucide="wind"></i></span>
                 <p>NO2</p>
                 <strong id="no2Value">--</strong>
                 <span id="no2Level" class="delta neutral">ppm</span>
               </article>
 
-              <article class="card metric-tile">
+              <article id="pm1Card" class="card metric-tile" data-search-label="pm1 pm1.0 particulate matter live readings">
                 <span class="tile-icon cyan"><i data-lucide="scan-line"></i></span>
                 <p>PM1.0</p>
                 <strong id="pm1Value">--</strong>
                 <span id="pm1Level" class="delta neutral">ug/m3</span>
               </article>
 
-              <article class="card metric-tile combo-tile">
+              <article id="pmCard" class="card metric-tile combo-tile" data-search-label="pm2.5 pm25 pm10 particulate matter dust readings">
                 <span class="tile-icon amber"><i data-lucide="sparkles"></i></span>
                 <div class="combo-values">
                   <div>
@@ -153,7 +153,7 @@
                 </div>
               </article>
 
-              <article class="card metric-tile combo-tile">
+              <article id="weatherCard" class="card metric-tile combo-tile" data-search-label="temperature humidity weather heat moisture readings">
                 <span class="tile-icon orange"><i data-lucide="thermometer"></i></span>
                 <div class="combo-values">
                   <div>
@@ -171,8 +171,8 @@
             </div>
           </section>
 
-          <section class="analytics-grid">
-            <article class="card ring-card">
+          <section id="analyticsSection" class="analytics-grid" data-search-label="analytics summary history exposure confidence device">
+            <article id="confidenceCard" class="card ring-card" data-search-label="confidence model device node ring score">
               <div class="year-select">Live</div>
               <div id="riskScoreRing" class="score-ring">
                 <span id="ringScore">--</span>
@@ -181,7 +181,7 @@
               <p class="ring-caption"><strong id="deviceId">node_01</strong></p>
             </article>
 
-            <article class="card quick-list">
+            <article id="summaryCard" class="card quick-list" data-search-label="summary exposure dominant pollutant child score gas load pm load humidity flag">
               <div class="card-title">
                 <div>
                   <span class="eyebrow">Exposure</span>
@@ -199,7 +199,7 @@
               </dl>
             </article>
 
-            <article class="card trend-card">
+            <article id="riskHistoryCard" class="card trend-card" data-search-label="history timeline prediction history risk chart">
               <div class="card-title">
                 <div>
                   <span class="eyebrow">Prediction history</span>
@@ -210,7 +210,7 @@
               <canvas id="riskTrendChart" width="760" height="260"></canvas>
             </article>
 
-            <article class="card history-card">
+            <article id="predictionsCard" class="card history-card" data-search-label="recent predictions history table records anomaly dominant">
               <div class="card-title">
                 <div>
                   <span class="eyebrow">Recent</span>

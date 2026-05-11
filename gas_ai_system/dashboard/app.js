@@ -114,6 +114,114 @@ function initSidebarNavigation() {
   });
 }
 
+function dashboardSearchTargets() {
+  return [
+    { id: "riskCard", terms: "dashboard overview risk prediction safe caution dangerous anomaly alerts live prediction" },
+    { id: "riskScoreCard", terms: "risk score model confidence percentage" },
+    { id: "coCard", terms: "co carbon monoxide gas ppm" },
+    { id: "so2Card", terms: "so2 sulphur sulfur dioxide gas ppm" },
+    { id: "aqiCard", terms: "aqi air quality trend chart 30 day graph" },
+    { id: "no2Card", terms: "no2 nitrogen dioxide gas ppm" },
+    { id: "pm1Card", terms: "pm1 pm1.0 particulate matter dust" },
+    { id: "pmCard", terms: "pm2.5 pm25 pm10 particulate matter dust" },
+    { id: "weatherCard", terms: "temperature humidity weather heat moisture" },
+    { id: "confidenceCard", terms: "confidence device node ring score model" },
+    { id: "summaryCard", terms: "summary exposure dominant pollutant child score gas load pm load humidity flag" },
+    { id: "riskHistoryCard", terms: "timeline risk history chart prediction history" },
+    { id: "predictionsCard", terms: "recent predictions table records history anomaly dominant" },
+  ];
+}
+
+function normalizeSearchTerm(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function scoreSearchTarget(query, target) {
+  const element = byId(target.id);
+  if (!element) return 0;
+
+  const haystack = normalizeSearchTerm(
+    `${target.terms} ${element.dataset.searchLabel || ""} ${element.textContent || ""}`
+  );
+
+  if (!haystack) return 0;
+  if (haystack.includes(query)) return 100 + query.length;
+
+  return query
+    .split(" ")
+    .filter((word) => word.length > 1 && haystack.includes(word))
+    .length;
+}
+
+function highlightSearchTarget(element) {
+  if (!element) return;
+  document.querySelectorAll(".search-highlight").forEach((item) => {
+    item.classList.remove("search-highlight");
+  });
+  element.classList.add("search-highlight");
+  window.setTimeout(() => element.classList.remove("search-highlight"), 1800);
+}
+
+function scrollToSearchTarget(element) {
+  if (!element) return;
+  element.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+  highlightSearchTarget(element);
+}
+
+function runDashboardSearch(query) {
+  const searchTerm = normalizeSearchTerm(query);
+  if (!searchTerm) return;
+
+  if (["chat", "assistant", "omi chat", "omiguard chat"].some((term) => searchTerm.includes(term))) {
+    setChatOpen(true);
+    return;
+  }
+
+  if (["device", "node", "sensor node", "settings"].some((term) => searchTerm.includes(term))) {
+    const target = byId("confidenceCard") || byId("deviceNavLink");
+    scrollToSearchTarget(target);
+    return;
+  }
+
+  const match = dashboardSearchTargets()
+    .map((target) => ({
+      ...target,
+      score: scoreSearchTarget(searchTerm, target),
+    }))
+    .sort((a, b) => b.score - a.score)[0];
+
+  if (match?.score > 0) {
+    scrollToSearchTarget(byId(match.id));
+    return;
+  }
+
+  const fallback = byId("overviewSection") || byId("riskCard");
+  scrollToSearchTarget(fallback);
+}
+
+function initDashboardSearch() {
+  const searchInput = byId("dashboardSearch");
+  const searchBox = document.querySelector(".search-box");
+  if (!searchInput) return;
+
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    runDashboardSearch(searchInput.value);
+  });
+
+  searchInput.addEventListener("search", () => {
+    runDashboardSearch(searchInput.value);
+  });
+
+  searchBox?.querySelector("kbd")?.addEventListener("click", () => {
+    runDashboardSearch(searchInput.value);
+  });
+}
+
 function toNumber(value) {
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
@@ -930,6 +1038,7 @@ window.addEventListener("resize", () => {
 cacheElements();
 initSidebarNavigation();
 initIcons();
+initDashboardSearch();
 initChat();
 refresh();
 setInterval(refresh, REFRESH_MS);

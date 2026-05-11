@@ -237,6 +237,8 @@ input {
   color: #a29cb2;
   background: #fbfafc;
   font-size: 12px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .topbar-actions {
@@ -482,6 +484,11 @@ input {
   border-radius: 8px;
   box-shadow: var(--shadow);
   padding: 20px;
+}
+
+.search-highlight {
+  outline: 3px solid rgba(255, 159, 0, 0.48);
+  box-shadow: 0 8px 26px rgba(255, 159, 0, 0.2), var(--shadow);
 }
 
 .hero-card {
