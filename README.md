@@ -66,7 +66,7 @@ Do not commit `firebase_key.json` or `.env`.
 ```powershell
 .\.venv\Scripts\Activate.ps1
 cd gas_ai_system\src
-uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn api:app --host 0.0.0.0 --port 8000
 ```
 
 Open:
