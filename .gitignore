@@ -26,6 +26,7 @@ serviceAccountKey.json
 gas_ai_system/data/processed_json/
 gas_ai_system/data/processed_json_no_aqi/
 gas_ai_system/data/processed_ids.txt
+gas_ai_system/data/email_alert_state.json
 logs/
 *.log
 

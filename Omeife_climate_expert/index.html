@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gas Monitoring Dashboard</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f7fb;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+    padding:30px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    max-width:400px;
+}
+
+.alert{
+    color:red;
+    font-weight:bold;
+}
+
+/* FLOATING CHAT BUTTON */
+
+.chat-button{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    border:none;
+    background:#2563eb;
+    color:white;
+    font-size:28px;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    z-index:1000;
+}
+
+/* CHAT WINDOW */
+
+.chat-container{
+    position:fixed;
+    bottom:100px;
+    right:25px;
+    width:350px;
+    height:500px;
+    background:white;
+    border-radius:15px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    display:none;
+    flex-direction:column;
+    overflow:hidden;
+    z-index:1000;
+}
+
+.chat-header{
+    background:#2563eb;
+    color:white;
+    padding:15px;
+    font-weight:bold;
+}
+
+.chat-messages{
+    flex:1;
+    padding:15px;
+    overflow-y:auto;
+    background:#f9fafb;
+}
+
+.message{
+    margin-bottom:12px;
+    padding:10px;
+    border-radius:10px;
+    max-width:80%;
+}
+
+.user{
+    background:#2563eb;
+    color:white;
+    margin-left:auto;
+}
+
+.bot{
+    background:#e5e7eb;
+    color:black;
+}
+
+/* INPUT */
+
+.chat-input-area{
+    display:flex;
+    border-top:1px solid #ddd;
+}
+
+.chat-input{
+    flex:1;
+    border:none;
+    padding:15px;
+    outline:none;
+}
+
+.send-btn{
+    border:none;
+    background:#2563eb;
+    color:white;
+    padding:0 20px;
+    cursor:pointer;
+}
+
+/* TYPING INDICATOR */
+
+.dots::after {
+    content: '';
+    animation: dots 1.2s steps(3, end) infinite;
+}
+
+@keyframes dots {
+    0% { content: ''; }
+    33% { content: '.'; }
+    66% { content: '..'; }
+    100% { content: '...'; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <h1>Harmful Gas Monitoring Dashboard</h1>
+
+    <div class="card">
+        <h2>Current Status</h2>
+
+        <p><strong>Gas:</strong> Methane Leak</p>
+        <p><strong>MQ4:</strong> 780 ppm</p>
+        <p><strong>MQ135:</strong> 420 ppm</p>
+        <p><strong>Temperature:</strong> 37°C</p>
+
+        <p class="alert">⚠ High Risk Detected</p>
+    </div>
+
+</div>
+
+<!-- CHAT BUTTON -->
+
+<button class="chat-button" onclick="toggleChat()">
+💬
+</button>
+
+<!-- CHAT WINDOW -->
+
+<div class="chat-container" id="chatContainer">
+
+    <div class="chat-header">
+        AI Safety Assistant
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+
+        <div class="message bot">
+            Hello 👋<br>
+            Ask me anything about the gas readings, predictions, or safety recommendations.
+        </div>
+
+    </div>
+
+    <div class="chat-input-area">
+
+        <input 
+            type="text" 
+            id="userInput"
+            class="chat-input"
+            placeholder="Type your question..."
+        >
+
+        <button class="send-btn" onclick="sendMessage()">
+            Send
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+/* OPEN/CLOSE CHAT */
+function toggleChat(){
+
+    const chat = document.getElementById("chatContainer");
+
+    chat.style.display = (chat.style.display === "flex") ? "none" : "flex";
+}
+
+/* SHOW TYPING */
+function showTypingIndicator(){
+
+    const messages = document.getElementById("chatMessages");
+
+    const typingDiv = document.createElement("div");
+    typingDiv.classList.add("message", "bot");
+    typingDiv.id = "typing-indicator";
+
+    typingDiv.innerHTML = "AI is typing<span class='dots'></span>";
+
+    messages.appendChild(typingDiv);
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
+/* REMOVE TYPING */
+function removeTypingIndicator(){
+
+    const typing = document.getElementById("typing-indicator");
+
+    if(typing){
+        typing.remove();
+    }
+}
+
+/* SEND MESSAGE */
+async function sendMessage(){
+
+    const input = document.getElementById("userInput");
+    const messages = document.getElementById("chatMessages");
+
+    const userText = input.value.trim();
+
+    if(userText === "") return;
+
+    // USER MESSAGE
+    messages.innerHTML += `
+        <div class="message user">
+            ${userText}
+        </div>
+    `;
+
+    input.value = "";
+
+    messages.scrollTop = messages.scrollHeight;
+
+    // SHOW TYPING
+    showTypingIndicator();
+
+    try{
+
+        const response = await fetch("http://127.0.0.1:5000/chat", {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body: JSON.stringify({
+
+                message:userText,
+
+                prediction:{
+                    label:"Methane Leak",
+                    confidence:"97%",
+                    mq4:780,
+                    mq135:420,
+                    temperature:37
+                }
+
+            })
+
+        });
+
+        const data = await response.json();
+
+        // REMOVE TYPING
+        removeTypingIndicator();
+
+        // BOT RESPONSE
+        messages.innerHTML += `
+            <div class="message bot">
+                ${data.reply}
+            </div>
+        `;
+
+        messages.scrollTop = messages.scrollHeight;
+
+    }catch(error){
+
+        removeTypingIndicator();
+
+        messages.innerHTML += `
+            <div class="message bot">
+                Error connecting to AI server.
+            </div>
+        `;
+    }
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+    "rows": 90,
+    "features": [
+        "co",
+        "so2",
+        "no2",
+        "pm1_0",
+        "pm2_5",
+        "pm10",
+        "temperature",
+        "humidity",
+        "hour",
+        "day_of_week",
+        "total_gas_load",
+        "total_pm_load",
+        "co_so2_interaction",
+        "gas_pm_interaction",
+        "temp_humidity_index",
+        "heat_stress_flag",
+        "high_humidity_flag",
+        "pm2_5_pm10_ratio",
+        "pm1_pm2_5_ratio",
+        "child_exposure_score"
+    ],
+    "classes": [
+        "Dangerous",
+        "Safe"
+    ],
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "class_distribution": {
+        "Dangerous": 55,
+        "Safe": 35
+    },
+    "data_path": "c:\\Users\\USER\\Documents\\grant\\gas_ai_system\\data\\model_ready_sensor_data_no_aqi.csv"
+}
