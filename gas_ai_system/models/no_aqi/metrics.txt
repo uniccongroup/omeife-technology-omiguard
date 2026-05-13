@@ -1,8 +1,0 @@
-OmiGuard Lite No-AQI Model Training Metrics
-===========================================
-Rows: 90
-Features: 20
-Feature columns: ['co', 'so2', 'no2', 'pm1_0', 'pm2_5', 'pm10', 'temperature', 'humidity', 'hour', 'day_of_week', 'total_gas_load', 'total_pm_load', 'co_so2_interaction', 'gas_pm_interaction', 'temp_humidity_index', 'heat_stress_flag', 'high_humidity_flag', 'pm2_5_pm10_ratio', 'pm1_pm2_5_ratio', 'child_exposure_score']
-Classes: ['Dangerous', 'Safe']
-Accuracy: 1.0000
-Macro F1: 1.0000
