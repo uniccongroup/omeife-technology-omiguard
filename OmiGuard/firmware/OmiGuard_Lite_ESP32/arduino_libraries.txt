@@ -1,0 +1,7 @@
+Firebase ESP Client by Mobizt
+Adafruit GFX Library
+Adafruit SH110X
+DHT sensor library
+DS3231
+WinsenZE03
+SD_ZH03B

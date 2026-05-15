@@ -1,7 +1,12 @@
-const DATABASE_URL = "https://streamlit-auth-9148c-default-rtdb.firebaseio.com";
-const DEVICE_ID = "node_01";
+const dashboardConfig = window.OMIGUARD_CONFIG || {};
+const DATABASE_URL = dashboardConfig.databaseUrl || "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com";
+const DEVICE_ID = dashboardConfig.deviceId || "node_01";
 const REFRESH_MS = 10000;
+const HISTORY_REFRESH_MS = 60000;
+const ALERT_REFRESH_MS = 60000;
 const HISTORY_LIMIT = 24;
+const HISTORY_FETCH_LIMIT = 30;
+const ALERT_FETCH_LIMIT = 20;
 const CHAT_API_URL =
   window.location.hostname
     ? `${window.location.protocol}//${window.location.hostname}:8000/chat`
@@ -13,20 +18,32 @@ const latestUrls = [
 ];
 
 const historyUrls = [
-  `${DATABASE_URL}/predictions/${DEVICE_ID}/history.json`,
-  `${DATABASE_URL}/sensor_data/${DEVICE_ID}/predictions/history.json`,
+  firebaseLimitQuery(`${DATABASE_URL}/predictions/${DEVICE_ID}/history.json`, HISTORY_FETCH_LIMIT),
+  firebaseLimitQuery(`${DATABASE_URL}/sensor_data/${DEVICE_ID}/predictions/history.json`, HISTORY_FETCH_LIMIT),
 ];
 
 const alertHistoryUrls = [
-  `${DATABASE_URL}/alerts/${DEVICE_ID}/history.json`,
-  `${DATABASE_URL}/sensor_data/${DEVICE_ID}/alerts/history.json`,
+  firebaseLimitQuery(`${DATABASE_URL}/alerts/${DEVICE_ID}/history.json`, ALERT_FETCH_LIMIT),
+  firebaseLimitQuery(`${DATABASE_URL}/sensor_data/${DEVICE_ID}/alerts/history.json`, ALERT_FETCH_LIMIT),
 ];
 
 const els = {};
 let lastRenderedData = null;
+let cachedHistory = [];
+let cachedAlerts = [];
+let lastHistoryFetch = 0;
+let lastAlertFetch = 0;
 
 function byId(id) {
   return document.getElementById(id);
+}
+
+function firebaseLimitQuery(url, limit) {
+  const params = new URLSearchParams({
+    orderBy: '"$key"',
+    limitToLast: String(limit),
+  });
+  return `${url}?${params.toString()}`;
 }
 
 function cacheElements() {
@@ -462,7 +479,8 @@ function normalizeAlertRecord(record, key = "") {
 }
 
 async function fetchJson(url) {
-  const response = await fetch(`${url}?ts=${Date.now()}`, { cache: "no-store" });
+  const separator = url.includes("?") ? "&" : "?";
+  const response = await fetch(`${url}${separator}ts=${Date.now()}`, { cache: "no-store" });
   if (!response.ok) throw new Error(`Firebase request failed: ${response.status}`);
   return response.json();
 }
@@ -483,27 +501,20 @@ async function fetchFirst(urls) {
   return null;
 }
 
-async function loadData() {
-  const [latestRaw, historyRaw] = await Promise.all([
-    fetchFirst(latestUrls),
-    fetchFirst(historyUrls),
-  ]);
-  const alertsRaw = await fetchFirst(alertHistoryUrls).catch((error) => {
-    console.warn("Alert history unavailable:", error);
-    return null;
-  });
-
-  const latest = normalizeRecord(latestRaw, "latest");
-  const history = Object.entries(historyRaw || {})
+function normalizeHistoryRecords(historyRaw) {
+  return Object.entries(historyRaw || {})
     .map(([key, value]) => normalizeRecord(value, key))
     .filter(Boolean)
     .sort((a, b) => {
       const aTime = new Date(a.prediction_time || a.sensor_timestamp || 0).getTime();
       const bTime = new Date(b.prediction_time || b.sensor_timestamp || 0).getTime();
       return bTime - aTime;
-    });
+    })
+    .slice(0, HISTORY_LIMIT);
+}
 
-  const alerts = Object.entries(alertsRaw || {})
+function normalizeAlertRecords(alertsRaw) {
+  return Object.entries(alertsRaw || {})
     .map(([key, value]) => normalizeAlertRecord(value, key))
     .filter(Boolean)
     .sort((a, b) => {
@@ -511,8 +522,38 @@ async function loadData() {
       const bTime = new Date(b.sent_at || b.prediction_time || b.sensor_timestamp || 0).getTime();
       return bTime - aTime;
     });
+}
 
-  return { latest, history, alerts };
+async function loadData(options = {}) {
+  const now = Date.now();
+  const shouldFetchHistory =
+    options.forceHistory || !lastHistoryFetch || now - lastHistoryFetch >= HISTORY_REFRESH_MS;
+  const shouldFetchAlerts = options.forceAlerts || !lastAlertFetch || now - lastAlertFetch >= ALERT_REFRESH_MS;
+
+  const latestRaw = await fetchFirst(latestUrls);
+  const latest = normalizeRecord(latestRaw, "latest");
+
+  if (shouldFetchHistory) {
+    try {
+      const historyRaw = await fetchFirst(historyUrls);
+      cachedHistory = normalizeHistoryRecords(historyRaw);
+      lastHistoryFetch = now;
+    } catch (error) {
+      console.warn("Prediction history unavailable:", error);
+    }
+  }
+
+  if (shouldFetchAlerts) {
+    try {
+      const alertsRaw = await fetchFirst(alertHistoryUrls);
+      cachedAlerts = normalizeAlertRecords(alertsRaw);
+      lastAlertFetch = now;
+    } catch (error) {
+      console.warn("Alert history unavailable:", error);
+    }
+  }
+
+  return { latest, history: cachedHistory, alerts: cachedAlerts };
 }
 
 function setConnection(state, text) {
@@ -1026,6 +1067,7 @@ function setAlertsModalOpen(open) {
   els.alertsModal.hidden = !open;
   els.alertsModal.toggleAttribute("hidden", !open);
   if (open) {
+    refresh({ forceAlerts: true });
     els.alertsModalClose?.focus();
   }
 }
@@ -1185,10 +1227,10 @@ function initChat() {
   });
 }
 
-async function refresh() {
+async function refresh(options = {}) {
   try {
     setConnection("moderate", "Refreshing");
-    const data = await loadData();
+    const data = await loadData(options);
     render(data);
     setConnection("safe", "Live");
   } catch (error) {
@@ -1212,5 +1254,5 @@ initIcons();
 initDashboardSearch();
 initAlerts();
 initChat();
-refresh();
+refresh({ forceHistory: true, forceAlerts: true });
 setInterval(refresh, REFRESH_MS);

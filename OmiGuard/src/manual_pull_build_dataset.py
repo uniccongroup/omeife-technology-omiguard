@@ -9,7 +9,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 FIREBASE_KEY_PATH = os.path.join(BASE_DIR, "firebase_key.json")
 
-DATABASE_URL = "https://streamlit-auth-9148c-default-rtdb.firebaseio.com/"
+DATABASE_URL = os.getenv(
+    "FIREBASE_DATABASE_URL",
+    "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com/",
+)
 SENSOR_PATH = "sensor_data/node_01/readings"
 
 DATA_DIR = os.path.join(BASE_DIR, "data")

@@ -17,6 +17,8 @@ emitrack/
 .env
 *.env
 !*.env.example
+secrets.h
+config.js
 firebase_key.json
 serviceAccountKey.json
 *.pem

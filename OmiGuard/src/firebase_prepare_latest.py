@@ -13,7 +13,10 @@ JSON_DIR = os.path.join(BASE_DIR, "data", "processed_json")
 JSON_HISTORY_DIR = os.path.join(JSON_DIR, "history")
 LATEST_JSON_PATH = os.path.join(JSON_DIR, "latest_payload.json")
 
-DATABASE_URL = "https://streamlit-auth-9148c-default-rtdb.firebaseio.com/"
+DATABASE_URL = os.getenv(
+    "FIREBASE_DATABASE_URL",
+    "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com/",
+)
 LATEST_PATH = "sensor_data/node_01/latest"
 READINGS_PATH = "sensor_data/node_01/readings"
 
